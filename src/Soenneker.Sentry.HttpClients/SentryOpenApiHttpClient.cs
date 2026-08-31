@@ -11,13 +11,13 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Sentry.HttpClients;
 
-///<inheritdoc cref="ISentryOpenApiHttpClient"/>
 public sealed class SentryOpenApiHttpClient : ISentryOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
     private readonly IConfiguration _config;
+    private readonly string _cacheKey = $"{nameof(SentryOpenApiHttpClient)}:{Guid.NewGuid():N}";
 
-    private const string _prodBaseUrl = "https://sentry.io/api/0";
+    private const string _prodBaseUrl = "https://sentry.io/";
 
     public SentryOpenApiHttpClient(IHttpClientCache httpClientCache, IConfiguration config)
     {
@@ -27,7 +27,7 @@ public sealed class SentryOpenApiHttpClient : ISentryOpenApiHttpClient
 
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(nameof(SentryOpenApiHttpClient), (config: _config, baseUrl: _config["Sentry:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
+        return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config["Sentry:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
             var apiKey = state.config.GetValueStrict<string>("Sentry:ApiKey");
             string authHeaderName = state.config["Sentry:AuthHeaderName"] ?? "Authorization";
@@ -45,20 +45,13 @@ public sealed class SentryOpenApiHttpClient : ISentryOpenApiHttpClient
         }, cancellationToken);
     }
 
-    /// <summary>
-    /// Releases resources used by the current instance.
-    /// </summary>
     public void Dispose()
     {
-        _httpClientCache.RemoveSync(nameof(SentryOpenApiHttpClient));
+        _httpClientCache.RemoveSync(_cacheKey);
     }
 
-    /// <summary>
-    /// Asynchronously releases resources used by the current instance.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
-        return _httpClientCache.Remove(nameof(SentryOpenApiHttpClient));
+        return _httpClientCache.Remove(_cacheKey);
     }
 }

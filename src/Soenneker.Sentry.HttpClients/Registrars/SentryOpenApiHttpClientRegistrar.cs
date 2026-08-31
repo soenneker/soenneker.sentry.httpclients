@@ -6,7 +6,7 @@ using Soenneker.Utils.HttpClientCache.Registrar;
 namespace Soenneker.Sentry.HttpClients.Registrars;
 
 /// <summary>
-/// Registers the OpenAPI HttpClient wrapper for dependency injection.
+/// Registers the authenticated Sentry HTTP client provider.
 /// </summary>
 public static class SentryOpenApiHttpClientRegistrar
 {
