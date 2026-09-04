@@ -11,6 +11,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Sentry.HttpClients;
 
+/// <inheritdoc cref="ISentryOpenApiHttpClient" />
 public sealed class SentryOpenApiHttpClient : ISentryOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
