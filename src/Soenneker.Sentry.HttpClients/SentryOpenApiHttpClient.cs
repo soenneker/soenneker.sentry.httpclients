@@ -30,7 +30,7 @@ public sealed class SentryOpenApiHttpClient : ISentryOpenApiHttpClient
     {
         return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config["Sentry:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
-            var apiKey = state.config.GetValueStrict<string>("Sentry:ApiKey");
+            var apiKey = state.config.GetStringStrict("Sentry:ApiKey");
             string authHeaderName = state.config["Sentry:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["Sentry:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
